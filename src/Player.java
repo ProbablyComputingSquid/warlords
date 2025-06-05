@@ -49,13 +49,21 @@ public class Player {
     }
     public Card getCardFromHandByName(String name) {
         for (Card card : hand) {
-            if (name.equals(card.toString())) {
+            String adjustedName = "";
+            switch (name.substring(1)) {
+                case "D" -> adjustedName = "♦";
+                case "H" -> adjustedName = "♥";
+                case "C" -> adjustedName = "♣";
+                case "S" -> adjustedName = "♠";
+            }
+            adjustedName = name.charAt(0) + adjustedName;
+            if (adjustedName.equals(card.toString())) {
                 return card;
             }
         }
         return null; // not sure what to do here except return null cause no card found
     }
-    public ArrayList<Card> getCardsFromHandByNames(ArrayList<String> names) {
+    public ArrayList<Card> getCardsFromHandByNames(String[] names) {
         ArrayList<Card> cardsToReturn = new ArrayList<>();
         for (String name : names) {
             cardsToReturn.add(getCardFromHandByName(name));

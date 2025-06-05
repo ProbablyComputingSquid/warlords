@@ -16,20 +16,21 @@ public class Card implements Comparable<Card> {
         KING("K"),
         ACE("A"),
         TWO("2"),
-        JOKER("JOKER");
+        JOKER("$");
         public final String label;
         private Rank(String label) {
             this.label = label;
         }
+
     }
 
 
     public enum Suit {
-        HEARTS("H"),
-        DIAMONDS("D"),
-        CLUBS("C"),
-        SPADES("S"),
-        JOKER("");
+        HEARTS("♥"),
+        DIAMONDS("♦"),
+        CLUBS("♣"),
+        SPADES("♠"),
+        JOKER("\uD83C\uDCCF");
         public final String label;
         private Suit(String label) {
             this.label = label;
@@ -53,6 +54,23 @@ public class Card implements Comparable<Card> {
     public int getValue() {
         return value;
     }
+
+    public void printCard() {
+        StringBuilder card = new StringBuilder();
+        if (getRank().label.equals("10")) {
+            card.append(String.format("┏%s━", rank.label));
+            card.append(String.format("┓\n┃ %S ┃\n", suit.label));
+            card.append(String.format("┗━%s┛ \n", rank.label));
+        } else {
+            card.append(String.format("┏%s━━", rank.label));
+            card.append(String.format("┓\n┃ %S ┃\n", suit.label));
+            card.append(String.format("┗━━%s┛ \n", rank.label));
+        }
+
+        System.out.print(card);
+        System.out.flush();
+    }
+
     @Override
     public String toString() {
         return rank.label + suit.label;

@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Round {
     public enum ROUND_STATE {
@@ -49,6 +48,9 @@ public class Round {
     public ROUND_STATE getSetState() {
         return setState;
     }
+    public HAND_TYPE getHandType() {
+        return handType;
+    }
     public Player getWinner() {
         return winner;
     }
@@ -59,14 +61,22 @@ public class Round {
         playedSetCards = new ArrayList<>(); // purge played set cards
         handType = HAND_TYPE.NONE_PLAYED;
     }
+    public String getPlayedCards() {
+        String cards = "";
+        for (Card card : playedSetCards) {
+            cards += card + ", ";
+        }
+        return cards;
+    }
     /**
      *
      * @param player player object that is playing the card
      * @param cards the cards the player is playing
      * @return PLAY_RESULT enum
      */
-    public PLAY_RESULT submitCard(Player player, ArrayList<Card> cards) throws Exception {
-        if (cards == null || cards.isEmpty()) { // null card means you don't play anything
+    public PLAY_RESULT submitCards(Player player, ArrayList<Card> cards) throws Exception {
+        if (cards == null || cards.isEmpty()) { // null card means you don't play anything, pass turn
+            passTurn(player);
             return PLAY_RESULT.FAILED_NOT_ENOUGH_CARDS;
         }
         if (roundState == ROUND_STATE.WON) {
