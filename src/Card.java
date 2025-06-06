@@ -54,22 +54,20 @@ public class Card implements Comparable<Card> {
     public int getValue() {
         return value;
     }
-
-    public void printCard() {
+    public String getFancyCard() {
         StringBuilder card = new StringBuilder();
         if (getRank().label.equals("10")) {
             card.append(String.format("┏%s━", rank.label));
             card.append(String.format("┓\n┃ %S ┃\n", suit.label));
-            card.append(String.format("┗━%s┛ \n", rank.label));
+            card.append(String.format("┗━%s┛\n", rank.label));
         } else {
             card.append(String.format("┏%s━━", rank.label));
             card.append(String.format("┓\n┃ %S ┃\n", suit.label));
-            card.append(String.format("┗━━%s┛ \n", rank.label));
+            card.append(String.format("┗━━%s┛\n", rank.label));
         }
-
-        System.out.print(card);
-        System.out.flush();
+        return card.toString();
     }
+
 
     @Override
     public String toString() {

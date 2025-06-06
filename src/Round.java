@@ -14,6 +14,8 @@ public class Round {
         JOKER_SUCCESS(),
         ROUND_OVER(),
         FAILED_TOO_MANY_CARDS(),
+        HAS_NOT_PLAYED(),
+        TURN_PASSED(),
     }
     public enum HAND_TYPE {
         NONE_PLAYED,
@@ -54,6 +56,12 @@ public class Round {
     public Player getWinner() {
         return winner;
     }
+    public boolean isPlayerInPlay(Player player) {
+        for (Player p : playersInPlay) {
+            if (p.equals(player)) return true;
+        }
+        return false;
+    }
     private void newSet() {
         playersInPlay = new ArrayList<>();
         playersInPlay.addAll(players); // reset players in play
@@ -75,25 +83,29 @@ public class Round {
      * @return PLAY_RESULT enum
      */
     public PLAY_RESULT submitCards(Player player, ArrayList<Card> cards) throws Exception {
-        if (cards == null || cards.isEmpty()) { // null card means you don't play anything, pass turn
+        if (cards == null || cards.isEmpty()) { // null cards list means you don't play anything, pass turn
             passTurn(player);
             return PLAY_RESULT.FAILED_NOT_ENOUGH_CARDS;
         }
+        // cant play anything if the rounds over
         if (roundState == ROUND_STATE.WON) {
             return PLAY_RESULT.ROUND_OVER;
         }
-        Card card = cards.getFirst();
-        if (card.getRank() == Card.Rank.JOKER) { // joker trumps everything, end the round
+        Card firstCard = cards.getFirst();
+        if (firstCard.getRank() == Card.Rank.JOKER) { // joker trumps everything, end the round
             setState = ROUND_STATE.WON;
+            System.out.printf("Player %s has won the round!", player.getName());
             newSet();
             return PLAY_RESULT.JOKER_SUCCESS;
         }
+        // loop through the cards and check if they´ re all the same suit cause thats how pairs work
         for (Card _card : cards) {
-            if (_card.getRank() != card.getRank()) {
+            if (_card.getRank() != firstCard.getRank()) {
                 return PLAY_RESULT.FAILED_NOT_ALL_SAME_RANK;
             }
         }
-        if (handType == HAND_TYPE.NONE_PLAYED) { // no cards have been played yet, establish the baseline
+        // no cards have been played yet, establish the baseline of single/pair/etc.
+        if (handType == HAND_TYPE.NONE_PLAYED) {
             switch (cards.size()) {
                 case 1 -> handType = HAND_TYPE.SINGLE;
                 case 2 -> handType = HAND_TYPE.PAIR;
@@ -101,23 +113,30 @@ public class Round {
                 case 4 -> handType = HAND_TYPE.FOUR_OF_A_KIND;
             }
         }
+        // why would bro try to play too many cards :sob:
         if (cards.size() > handType.ordinal()) {
             return PLAY_RESULT.FAILED_TOO_MANY_CARDS;
         } else if (cards.size() < handType.ordinal()) {
             return PLAY_RESULT.FAILED_NOT_ENOUGH_CARDS;
         }
 
-        if (playedSetCards.isEmpty() || card.getValue() > playedSetCards.getLast().getValue()) { // successful play!
-            playedSetCards.add(card);
+        // successful play!
+        if (playedSetCards.isEmpty() || firstCard.getValue() > playedSetCards.getLast().getValue()) {
+            for (Card playedCard : cards) {
+                playedSetCards.add(firstCard);
+                player.removeCard(playedCard);
+            }
+
             if (player.handSize() == 0) {
                 roundState = ROUND_STATE.WON;
+                System.out.printf("Player %s has won the round!", player.getName());
                 winner = player;
             }
             return PLAY_RESULT.SUCCESS;
         }
         return PLAY_RESULT.FAILED_CARD_TOO_LOW;
     }
-    // the player doesn't play anything
+    // the player doesn't play anything, passes the turn
     public void passTurn(Player player) {
         playersInPlay.remove(player);
         if (playersInPlay.size() == 1) { // nobody else can play anymore

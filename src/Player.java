@@ -15,13 +15,19 @@ public class Player {
         }
         return output;
     }
+    public void printFancyHand() {
+        sortHand();
+        Deck.printCards(hand);
+    }
     public void sortHand() {
         Collections.sort(hand);
     }
     public void setName(String name) {this.name = name;}
     public String getName() { return name; }
     public void recieveHand(ArrayList<Card> hand) {this.hand = hand;}
+    @Deprecated
     public void setPlaying(boolean playing) { this.playing = playing;     }
+    @Deprecated
     public boolean isPlaying() { return playing;}
     public int getId() {return id;}
     public int handSize() {return hand.size();}
@@ -67,7 +73,11 @@ public class Player {
         ArrayList<Card> cardsToReturn = new ArrayList<>();
         for (String name : names) {
             cardsToReturn.add(getCardFromHandByName(name));
+            System.out.println(name);
         }
         return cardsToReturn;
+    }
+    public void removeCard (Card card) {
+        hand.remove(card);
     }
 }
