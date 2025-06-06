@@ -50,15 +50,20 @@ public class Round {
             player.recieveHand(deck.dealHand(players.size()));
             if (player.handContainsCard(new Card(Card.Rank.THREE, Card.Suit.CLUBS))) {
                 threeOfClubsPlayer = i;
+                System.out.println("Detected three of clubs!");
             }
             i++;
         }
         Collections.rotate(players, threeOfClubsPlayer);
+        for (Player player : players) {
+            System.out.println(player.getName());
+        }
         roundState = ROUND_STATE.NEW;
     }
     public ROUND_STATE getRoundState() {
         return roundState;
     }
+    public ArrayList<Player> getPlayers() {return players;}
     @Theory // what does this even do
     @Deprecated
     public ROUND_STATE getSetState() {

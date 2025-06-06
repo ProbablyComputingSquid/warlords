@@ -30,7 +30,7 @@ public class Main {
         }
         Round round = new Round(players);
         while (round.getRoundState() != Round.ROUND_STATE.WON && round.getRoundState() != Round.ROUND_STATE.ABORTED) {
-            for (Player player : players) {
+            for (Player player : round.getPlayers()) {
                 if (!round.isPlayerInPlay(player)) {
                     System.out.printf("Player %S has previously passed %n", player.getName());
                     continue;

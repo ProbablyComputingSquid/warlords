@@ -21,7 +21,7 @@ public class Player {
     }
     public boolean handContainsCard(Card card) {
         for (Card _card : hand) {
-            if (card.equals(_card)) return true;
+            if (card.compareTo(_card) == 0 ) return true;
         }
         return false;
     }
