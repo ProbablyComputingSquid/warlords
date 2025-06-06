@@ -54,7 +54,7 @@ public class Round {
             }
             i++;
         }
-        Collections.rotate(players, threeOfClubsPlayer);
+        Collections.rotate(players, -threeOfClubsPlayer);
         for (Player player : players) {
             System.out.println(player.getName());
         }
@@ -64,6 +64,7 @@ public class Round {
         return roundState;
     }
     public ArrayList<Player> getPlayers() {return players;}
+
     @Theory // what does this even do
     @Deprecated
     public ROUND_STATE getSetState() {
@@ -85,6 +86,7 @@ public class Round {
         return false;
     }
     private void newSet() {
+
         playersInPlay = new ArrayList<>();
         playersInPlay.addAll(players); // reset players in play
         discardedCards.addAll(playedSetCards); // discard the played set cards
@@ -92,6 +94,7 @@ public class Round {
         handType = HAND_TYPE.NONE_PLAYED;
         int winnerIndex = 0;
         for (int i = 0; i < players.size(); i++) {
+            players.get(i).setPlaying(true);
             if (players.get(i).equals(winner)) {
                 winnerIndex = i;
             }
@@ -173,8 +176,11 @@ public class Round {
     // the player doesn't play anything, passes the turn
     public void passTurn(Player player) {
         playersInPlay.remove(player);
+        player.setPlaying(false);
         if (playersInPlay.size() == 1) { // nobody else can play anymore
+            System.out.printf("Player %s won the set! It is now their turn.", playersInPlay.getFirst().getName());
             newSet();
         }
     }
+
 }

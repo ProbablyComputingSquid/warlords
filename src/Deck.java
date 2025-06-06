@@ -11,8 +11,8 @@ public class Deck {
             }
         }
         // the two jokers
-        cards.add(new Card(13,4));
-        cards.add(new Card(13,4));
+        cards.add(new Card(Card.Rank.JOKER, Card.Suit.JOKER));
+        cards.add(new Card(Card.Rank.JOKER, Card.Suit.JOKER));
         shuffleDeck();
     }
     public void shuffleDeck() {

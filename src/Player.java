@@ -5,7 +5,7 @@ public class Player {
     private ArrayList<Card> hand;
     private final int id;
     private static int nextId = 1;
-    private boolean playing = false;
+    private boolean playing = true;
     private String name;
     public String viewHand() {
         sortHand();
@@ -31,9 +31,7 @@ public class Player {
     public void setName(String name) {this.name = name;}
     public String getName() { return name; }
     public void recieveHand(ArrayList<Card> hand) {this.hand = hand;}
-    @Deprecated
     public void setPlaying(boolean playing) { this.playing = playing;     }
-    @Deprecated
     public boolean isPlaying() { return playing;}
     public int getId() {return id;}
     public int handSize() {return hand.size();}
@@ -62,13 +60,13 @@ public class Player {
     public Card getCardFromHandByName(String name) {
         for (Card card : hand) {
             String adjustedName = "";
-            switch (name.substring(1)) {
+            switch (name.substring(name.length()-1)) { // fix for tens because those are two characters
                 case "D" -> adjustedName = "♦";
                 case "H" -> adjustedName = "♥";
                 case "C" -> adjustedName = "♣";
                 case "S" -> adjustedName = "♠";
             }
-            adjustedName = name.charAt(0) + adjustedName;
+            adjustedName = name.substring(0,name.length()-1) + adjustedName;
             if (name.equals("JOKER") && card.getRank() == Card.Rank.JOKER) {
                 return card;
             }
@@ -88,5 +86,9 @@ public class Player {
     }
     public void removeCard (Card card) {
         hand.remove(card);
+    }
+    @Override
+    public String toString() {
+        return String.format("Player '%s' (id #%d) %s", name, id, isPlaying() ? "is PLAYING" : "has PASSED");
     }
 }
