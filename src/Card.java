@@ -21,7 +21,6 @@ public class Card implements Comparable<Card> {
         private Rank(String label) {
             this.label = label;
         }
-
     }
 
 
@@ -30,7 +29,7 @@ public class Card implements Comparable<Card> {
         DIAMONDS("♦"),
         CLUBS("♣"),
         SPADES("♠"),
-        JOKER("\uD83C\uDCCF");
+        JOKER("\uD83C\uDCBF");
         public final String label;
         private Suit(String label) {
             this.label = label;

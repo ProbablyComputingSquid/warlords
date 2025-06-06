@@ -63,6 +63,9 @@ public class Player {
                 case "S" -> adjustedName = "♠";
             }
             adjustedName = name.charAt(0) + adjustedName;
+            if (name.equals("JOKER") && card.getRank() == Card.Rank.JOKER) {
+                return card;
+            }
             if (adjustedName.equals(card.toString())) {
                 return card;
             }

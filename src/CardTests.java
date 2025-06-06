@@ -8,6 +8,8 @@ public class CardTests {
         for (int i = 0; i < 54; i++) {
             //System.out.println(deck.drawCard().getFancyCard());
         }
+        Card joker = new Card(13,4);
+        System.out.print(joker.getFancyCard());
         Deck deck2 = new Deck();
         String[] cards = new String[3];
         for (int i = 0; i < 3; i++) {

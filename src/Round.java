@@ -1,10 +1,14 @@
+import org.junit.experimental.theories.Theory;
+
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Round {
     public enum ROUND_STATE {
         NEW(),
         IN_PROGRESS(),
         WON(),
+        ABORTED(),
     }
     public enum PLAY_RESULT {
         FAILED_CARD_TOO_LOW(),
@@ -16,6 +20,7 @@ public class Round {
         FAILED_TOO_MANY_CARDS(),
         HAS_NOT_PLAYED(),
         TURN_PASSED(),
+        FAILED_NOT_A_VALID_CARD(),
     }
     public enum HAND_TYPE {
         NONE_PLAYED,
@@ -47,8 +52,13 @@ public class Round {
     public ROUND_STATE getRoundState() {
         return roundState;
     }
+    @Theory // what does this even do
+    @Deprecated
     public ROUND_STATE getSetState() {
         return setState;
+    }
+    public void abort() {
+        roundState = ROUND_STATE.ABORTED;
     }
     public HAND_TYPE getHandType() {
         return handType;
@@ -68,6 +78,14 @@ public class Round {
         discardedCards.addAll(playedSetCards); // discard the played set cards
         playedSetCards = new ArrayList<>(); // purge played set cards
         handType = HAND_TYPE.NONE_PLAYED;
+        int winnerIndex = 0;
+        for (int i = 0; i < players.size(); i++) {
+            if (players.get(i).equals(winner)) {
+                winnerIndex = i;
+            }
+        }
+
+        Collections.rotate(players, winnerIndex);
     }
     public String getPlayedCards() {
         String cards = "";
@@ -92,6 +110,14 @@ public class Round {
             return PLAY_RESULT.ROUND_OVER;
         }
         Card firstCard = cards.getFirst();
+        for (Card _card : cards) {
+            if (_card == null) {
+                return PLAY_RESULT.FAILED_NOT_A_VALID_CARD;
+            }
+            if (_card.getRank() != firstCard.getRank()) {
+                return PLAY_RESULT.FAILED_NOT_ALL_SAME_RANK;
+            }
+        }
         if (firstCard.getRank() == Card.Rank.JOKER) { // joker trumps everything, end the round
             setState = ROUND_STATE.WON;
             System.out.printf("Player %s has won the round!", player.getName());
@@ -99,11 +125,7 @@ public class Round {
             return PLAY_RESULT.JOKER_SUCCESS;
         }
         // loop through the cards and check if they´ re all the same suit cause thats how pairs work
-        for (Card _card : cards) {
-            if (_card.getRank() != firstCard.getRank()) {
-                return PLAY_RESULT.FAILED_NOT_ALL_SAME_RANK;
-            }
-        }
+
         // no cards have been played yet, establish the baseline of single/pair/etc.
         if (handType == HAND_TYPE.NONE_PLAYED) {
             switch (cards.size()) {
@@ -126,7 +148,7 @@ public class Round {
                 playedSetCards.add(firstCard);
                 player.removeCard(playedCard);
             }
-
+            Deck.printCards(cards); // print the cards played to show
             if (player.handSize() == 0) {
                 roundState = ROUND_STATE.WON;
                 System.out.printf("Player %s has won the round!", player.getName());

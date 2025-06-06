@@ -1,5 +1,3 @@
-import org.junit.experimental.theories.Theories;
-
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -23,10 +21,10 @@ public class Main {
             players.add(player);
         }
         Round round = new Round(players);
-        while (round.getRoundState() != Round.ROUND_STATE.WON) {
+        while (round.getRoundState() != Round.ROUND_STATE.WON && round.getRoundState() != Round.ROUND_STATE.ABORTED) {
             for (Player player : players) {
                 if (!round.isPlayerInPlay(player)) {
-                    System.out.printf("Player %S has passed %n", player.getName());
+                    System.out.printf("Player %S has previously passed %n", player.getName());
                     continue;
                 }
                 System.out.printf("It is time for player %S's turn:%n (press enter to continue)", player.getName());
@@ -36,14 +34,18 @@ public class Main {
                 player.printFancyHand();
                 Round.PLAY_RESULT play_result = Round.PLAY_RESULT.HAS_NOT_PLAYED;
                 while (play_result != Round.PLAY_RESULT.SUCCESS && play_result != Round.PLAY_RESULT.JOKER_SUCCESS) {
-                    System.out.println("What cards do you want to play? (e.g. 3 of hearts is 3H, joker is JOK) - to pass type 'pass'");
+                    System.out.println("What cards do you want to play? (e.g. 3 of hearts is 3H, 4 of clubs and spades is 4C 4S, joker is JOKER) - to pass type 'pass'");
                     String cards = scanner.nextLine();
                     if (cards.strip().equalsIgnoreCase("pass")) {
                         round.passTurn(player);
                         play_result = Round.PLAY_RESULT.TURN_PASSED;
                         System.out.println("Turn Passed!");
                         break;
-                    } else {
+                    } else if (cards.strip().equalsIgnoreCase("quit")) {
+                        System.out.println("ABORTING...");
+                        round.abort();
+                        break;
+                    }else {
                         ArrayList<Card> cardsPlayed = player.getCardsFromHandByNames(cards.split(" "));
                         play_result = round.submitCards(player, cardsPlayed);
 
@@ -51,10 +53,12 @@ public class Main {
                             System.out.println("ERROR: The cards played returned status: " + play_result);
                         } else {
                             System.out.println("Well Played! Cards returned " + play_result);
+                            System.out.print("␇"); //. this should make a bell noise supposedly but jetbrains terminal is bad
                         }
                     }
 
                 }
+                if (round.getRoundState() == Round.ROUND_STATE.ABORTED) break;
                 System.out.println("Turn over, Press Enter to Continue:");
                 scanner.nextLine();
                 clearScreen();
