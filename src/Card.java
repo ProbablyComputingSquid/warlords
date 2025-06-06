@@ -40,8 +40,13 @@ public class Card implements Comparable<Card> {
     private final Suit suit;
     private final int value;
     public Card (int rank, int suit) {
-        this.rank = Rank.values()[rank];
+        this.rank = Rank.values()[rank-3];
         this.suit = Suit.values()[suit];
+        value = this.rank.ordinal() + 3;
+    }
+    public Card (Rank _rank, Suit _suit) {
+        this.rank = _rank;
+        this.suit = _suit;
         value = this.rank.ordinal() + 3;
     }
     public Rank getRank() {

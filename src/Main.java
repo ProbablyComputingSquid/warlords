@@ -7,6 +7,14 @@ public class Main {
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }
+    public static void printHelp() {
+        System.out.print("""
+                What is Warlords?
+                It's like multiplayer war, except instead of being completely deterministic, the player has a choice! That makes it such a better game.\s
+               The game is played in sets, which make up a round. The person with the 3 of clubs starts, and the winner of each set starts the next one.
+               The cards are ranked 3->King, Ace, 2, Joker. Be the first one to play all of your cards to win!
+               \s""");
+    }
     public static void main(String[] args) throws Exception {
         Scanner scanner = new Scanner(System.in);
         System.out.println("---WARLORDS---");
@@ -53,7 +61,7 @@ public class Main {
                             System.out.println("ERROR: The cards played returned status: " + play_result);
                         } else {
                             System.out.println("Well Played! Cards returned " + play_result);
-                            System.out.print("␇"); //. this should make a bell noise supposedly but jetbrains terminal is bad
+                            //System.out.print("␇"); //. this should make a bell noise but jetbrains terminal is bad
                         }
                     }
 

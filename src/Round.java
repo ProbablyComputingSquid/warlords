@@ -43,10 +43,17 @@ public class Round {
     private Player winner;
     public Round(ArrayList<Player> players) {
         this.players = players;
+        int i = 0;
+        int threeOfClubsPlayer = 0;
         for (Player player : players) {
             playersInPlay.add(player);
             player.recieveHand(deck.dealHand(players.size()));
+            if (player.handContainsCard(new Card(Card.Rank.THREE, Card.Suit.CLUBS))) {
+                threeOfClubsPlayer = i;
+            }
+            i++;
         }
+        Collections.rotate(players, threeOfClubsPlayer);
         roundState = ROUND_STATE.NEW;
     }
     public ROUND_STATE getRoundState() {

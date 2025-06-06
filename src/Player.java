@@ -19,6 +19,12 @@ public class Player {
         sortHand();
         Deck.printCards(hand);
     }
+    public boolean handContainsCard(Card card) {
+        for (Card _card : hand) {
+            if (card.equals(_card)) return true;
+        }
+        return false;
+    }
     public void sortHand() {
         Collections.sort(hand);
     }
