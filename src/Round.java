@@ -1,5 +1,6 @@
-import org.junit.experimental.theories.Theory;
-
+/**
+ * Round.java - round logic
+ */
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -65,7 +66,6 @@ public class Round {
     }
     public ArrayList<Player> getPlayers() {return players;}
 
-    @Theory // what does this even do
     @Deprecated
     public ROUND_STATE getSetState() {
         return setState;
@@ -86,7 +86,6 @@ public class Round {
         return false;
     }
     private void newSet() {
-
         playersInPlay = new ArrayList<>();
         playersInPlay.addAll(players); // reset players in play
         discardedCards.addAll(playedSetCards); // discard the played set cards
@@ -97,10 +96,11 @@ public class Round {
             players.get(i).setPlaying(true);
             if (players.get(i).equals(winner)) {
                 winnerIndex = i;
+                System.out.println("Found winner!");
             }
         }
 
-        Collections.rotate(players, winnerIndex);
+        Collections.rotate(players, -winnerIndex);
     }
     public String getPlayedCards() {
         String cards = "";
@@ -140,7 +140,6 @@ public class Round {
             return PLAY_RESULT.JOKER_SUCCESS;
         }
         // loop through the cards and check if they´ re all the same suit cause thats how pairs work
-
         // no cards have been played yet, establish the baseline of single/pair/etc.
         if (handType == HAND_TYPE.NONE_PLAYED) {
             switch (cards.size()) {

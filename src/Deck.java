@@ -1,3 +1,6 @@
+/**
+ * Deck.java - class for the Deck, which is basically a holder for cards
+ */
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -33,8 +36,6 @@ public class Deck {
     }
     public static void printCards(ArrayList<Card> cards) {
         String[] cardArray = new String[cards.size()];
-
-
             for (int i = 0; i < cards.size(); i++) {
                 cardArray[i] = cards.get(i).getFancyCard();
             }

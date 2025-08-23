@@ -1,3 +1,8 @@
+/**
+ * Main.java - contains the driver for the project
+ *
+ * */
+
 import java.util.ArrayList;
 import java.util.Scanner;
 

@@ -1,3 +1,7 @@
+/**
+ * Player.java - logic for Player class
+ */
+
 import java.util.ArrayList;
 import java.util.Collections;
 
