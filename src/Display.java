@@ -25,8 +25,8 @@ public class Display {
                     throws BadLocationException {
                 if (str == null) {return;}
                 char[] chars = str.toCharArray();
-                for (int i = 0; i < chars.length; i++) {
-                    if (chars[i] > '9' || chars[i] < '0') {
+                for (char aChar : chars) {
+                    if (aChar > '9' || aChar < '0') {
                         return;
                     }
                 }
@@ -36,12 +36,12 @@ public class Display {
     }
     static class Game implements ActionListener {
 
-        int count = 0;
-        JLabel label, test, titleLabel, playerAmountLabel;
-        JButton button, submitPlayers;
-        JFrame frame;
+
+        public JLabel test, titleLabel, playerAmountPromptLabel;
+        public JButton submitPlayers;
+        JFrame frame = new JFrame();
         JPanel panel;
-        NumberField playerAmountField;
+        public NumberField playerAmountField;
 
         public static void runGame() throws Exception {
             Scanner scanner = new Scanner(System.in);
@@ -107,15 +107,11 @@ public class Display {
 
 
 
-            JFrame frame = new JFrame();
-
-            button = new JButton("play hand");
-            button.addActionListener(this);
-            label = new JLabel("Number of cards: 0");
+            //JFrame frame
 
 
             titleLabel = new JLabel("---WARLORDS---");
-            playerAmountLabel = new JLabel("How many players?");
+            playerAmountPromptLabel = new JLabel("How many players?");
             playerAmountField = new NumberField(3);
             submitPlayers = new JButton("Start Game");
             submitPlayers.addActionListener(this);
@@ -129,13 +125,11 @@ public class Display {
             panel.setLayout(new GridLayout(3,2));
 
             panel.add(titleLabel);
-            panel.add(playerAmountLabel);
+            panel.add(playerAmountPromptLabel);
             panel.add(playerAmountField);
             panel.add(submitPlayers);
 
 
-            panel.add(button);
-            panel.add(label);
             panel.add(test);
 
             frame.add(panel, BorderLayout.CENTER);
@@ -146,18 +140,65 @@ public class Display {
 
 
         }
-        public void play(Integer players) {
+        JFrame gameFrame;
+        JPanel cardsPanel;
+        JLabel playerLabel, handLabel, playersListLabel;
+        public void play(Integer playerAmount) {
+            gameFrame = new JFrame();
+            cardsPanel = new JPanel();
+            playerLabel = new JLabel("Player amount: " + playerAmount);
+            handLabel = new JLabel();
+            playersListLabel = new JLabel();
 
+            /* game logic n stuff idk (also me when i forget how my own code works */
+            ArrayList<Player> players = new ArrayList<>();
+            String playerNames = "";
+            for (int i = 0; i < playerAmount; i++) {
+                Player player = new Player();
+                System.out.printf("What name for the player %d? ", i);
+                String name = JOptionPane.showInputDialog(
+                        null,                       // parent component (null = center on screen)
+                        "Enter Player " + i + " name:",         // prompt message
+                        "Input Required",           // title of dialog
+                        JOptionPane.QUESTION_MESSAGE
+                );
+
+                if (name != null) {
+                    System.out.println("You entered: " + name);
+                } else {
+                    System.out.println("User canceled the input.");
+                    name = "Player " + i;
+                }
+                playerNames += name + ", ";
+                player.setName(name);
+                players.add(player);
+            }
+            playerNames = playerNames.substring(0,playerNames.length() - 2);
+            playersListLabel.setText(playerNames);
+            Round round = new Round(players);
+
+            cardsPanel.add(playerLabel);
+            cardsPanel.add(playersListLabel);
+
+
+            cardsPanel.setBorder(BorderFactory.createEmptyBorder(30,30,10,30));
+            cardsPanel.setLayout(new GridLayout(3,2));
+
+            /* pack everything in and display */
+            gameFrame.add(cardsPanel, BorderLayout.CENTER);
+            gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            gameFrame.setTitle("Warlords");
+            gameFrame.pack();
+            gameFrame.setVisible(true);
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (e.getSource() == button) {
-                count++;
-                label.setText("Times clicked " + count);
-            } else if (e.getSource() == submitPlayers) {
-                test.setText(playerAmountField.getText());
-                play(Integer.getInteger(playerAmountField.getText()));
+            if (e.getSource() == submitPlayers) {
+                System.out.println();
+                int players = Integer.parseInt(this.playerAmountField.getText());
+                frame.dispose();
+                play(players);
             }
         }
 
