@@ -7,6 +7,36 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
+    public enum Color {
+        RESET("\033[0m"),
+        BLACK("\u001B[30m"),
+        RED("\u001B[31m"),
+        GREEN("\u001B[32m"),
+        YELLOW("\u001B[33m"),
+        BLUE("\u001B[34m"),
+        PURPLE("\u001B[35m"),
+        CYAN("\u001B[36m"),
+        WHITE("\u001B[37m"),
+
+        BLINK_ON("\u001B[5m"),
+        WHITE_BACKGROUND("\u001B[47m");
+        public String code;
+        Color(String s) {
+            code = s;
+        }
+    }
+    public static void printColor(String content, Color[] colors) {
+        for (Color color : colors) {
+            System.out.print(color);
+        }
+        System.out.print(content);
+        System.out.print(Color.RESET);
+        System.out.flush();
+    }
+    public static void printlnColor(String content, Color[] colors) {
+        printColor(content, colors);
+        System.out.println();
+    }
     // clear screen code taken from stack overflow
     public static void clearScreen() {
         System.out.print("\033[H\033[2J");
