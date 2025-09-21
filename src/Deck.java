@@ -50,5 +50,23 @@ public class Deck {
                 System.out.println();
             }
     }
+    public static String renderCards(ArrayList<Card> cards) {
+        String[] cardArray = new String[cards.size()];
+        String output = "";
+        for (int i = 0; i < cards.size(); i++) {
+            cardArray[i] = cards.get(i).getFancyCard();
+        }
+        String[][] splitCards = new String[cardArray.length][3];
+        for (int i = 0; i < cards.size(); i++) {
+            splitCards[i] = cardArray[i].split("\n");
+        }
+        for (int row = 0; row < splitCards[0].length; row++) {
+            for (int col = 0; col < splitCards.length; col++) {
+                output += splitCards[col][row];
+            }
+            output += "\n";
+        }
+        return output;
+    }
 
 }

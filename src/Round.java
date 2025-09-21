@@ -115,7 +115,7 @@ public class Round {
      * @param cards the cards the player is playing
      * @return PLAY_RESULT enum
      */
-    public PLAY_RESULT submitCards(Player player, ArrayList<Card> cards) throws Exception {
+    public PLAY_RESULT submitCards(Player player, ArrayList<Card> cards)  {
         if (cards == null || cards.isEmpty()) { // null cards list means you don't play anything, pass turn
             passTurn(player);
             return PLAY_RESULT.FAILED_NOT_ENOUGH_CARDS;

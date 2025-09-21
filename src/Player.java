@@ -23,6 +23,10 @@ public class Player {
         sortHand();
         Deck.printCards(hand);
     }
+    public String getFancyHand() {
+        sortHand();
+        return Deck.renderCards(hand);
+    }
     public boolean handContainsCard(Card card) {
         for (Card _card : hand) {
             if (card.compareTo(_card) == 0 ) return true;

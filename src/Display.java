@@ -142,12 +142,14 @@ public class Display {
         }
         JFrame gameFrame;
         JPanel cardsPanel;
-        JLabel playerLabel, handLabel, playersListLabel;
+        JLabel playerLabel, playersListLabel, statusLabel;
+        JTextField handField;
         public void play(Integer playerAmount) {
             gameFrame = new JFrame();
             cardsPanel = new JPanel();
             playerLabel = new JLabel("Player amount: " + playerAmount);
-            handLabel = new JLabel();
+            handField = new JTextField();
+            statusLabel = new JLabel();
             playersListLabel = new JLabel();
 
             /* game logic n stuff idk (also me when i forget how my own code works */
@@ -175,12 +177,10 @@ public class Display {
             }
             playerNames = playerNames.substring(0,playerNames.length() - 2);
             playersListLabel.setText(playerNames);
-            Round round = new Round(players);
-
+            cardsPanel.add(handField);
+            cardsPanel.add(statusLabel);
             cardsPanel.add(playerLabel);
             cardsPanel.add(playersListLabel);
-
-
             cardsPanel.setBorder(BorderFactory.createEmptyBorder(30,30,10,30));
             cardsPanel.setLayout(new GridLayout(3,2));
 
@@ -190,6 +190,61 @@ public class Display {
             gameFrame.setTitle("Warlords");
             gameFrame.pack();
             gameFrame.setVisible(true);
+            Round round = new Round(players);
+            while (round.getRoundState() != Round.ROUND_STATE.WON && round.getRoundState() != Round.ROUND_STATE.ABORTED) {
+                for (Player player : round.getPlayers()) {
+                    if (!round.isPlayerInPlay(player)) {
+                        System.out.printf("Player %S has previously passed %n", player.getName());
+                        continue;
+                    }
+                    JOptionPane.showMessageDialog(null, "It is time for player " + player.getName() + "'s turn:%n (press enter to continue)");
+
+
+                    System.out.println("The cards currently played are: " + round.getPlayedCards() + "\n And the current hand type is " + round.getHandType());
+                    System.out.printf("Player %s's hand: \n", player.getName());
+                    handField.setText(player.getFancyHand());
+                    player.printFancyHand();
+                    Round.PLAY_RESULT play_result = Round.PLAY_RESULT.HAS_NOT_PLAYED;
+                    while (play_result != Round.PLAY_RESULT.SUCCESS && play_result != Round.PLAY_RESULT.JOKER_SUCCESS) {
+                        System.out.println("What cards do you want to play? (e.g. 3 of hearts is 3H, 4 of clubs and spades is 4C 4S, joker is JOKER) - to pass type 'pass'");
+                        String cards = JOptionPane.showInputDialog(
+                                handField,                       // parent component (null = center on screen)
+                                "What cards will you play?",         // prompt message
+                                "Play cards",           // title of dialog
+                                JOptionPane.QUESTION_MESSAGE
+                        );
+                        if (cards.strip().equalsIgnoreCase("pass")) {
+                            System.out.println("Turn Passed!");
+                            round.passTurn(player);
+                            play_result = Round.PLAY_RESULT.TURN_PASSED;
+                            break;
+                        } else if (cards.strip().equalsIgnoreCase("quit")) {
+                            System.out.println("ABORTING...");
+                            round.abort();
+                            break;
+                        }else {
+                            ArrayList<Card> cardsPlayed = player.getCardsFromHandByNames(cards.split(" "));
+                            play_result = round.submitCards(player, cardsPlayed);
+
+                            if (play_result != Round.PLAY_RESULT.SUCCESS && play_result != Round.PLAY_RESULT.JOKER_SUCCESS) {
+                                System.out.println("ERROR: The cards played returned status: " + play_result);
+                            } else {
+                                System.out.println("Well Played! Cards returned " + play_result);
+                                //System.out.print("␇"); //. this should make a bell noise but jetbrains terminal is bad
+                            }
+                        }
+
+                    }
+                    if (round.getRoundState() == Round.ROUND_STATE.ABORTED) break;
+                    System.out.println("Turn over, Press Enter to Continue:");
+                    JOptionPane.showMessageDialog(null, "Kindly affirm for next player");
+                }
+
+            }
+
+
+
+
         }
 
         @Override
