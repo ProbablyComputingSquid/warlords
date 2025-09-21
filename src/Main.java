@@ -18,11 +18,19 @@ public class Main {
         CYAN("\u001B[36m"),
         WHITE("\u001B[37m"),
 
+        GOLD("\u001B[38;2;255;185;79m"),
+
+        BOLD("\u001B[1m"),
         BLINK_ON("\u001B[5m"),
-        WHITE_BACKGROUND("\u001B[47m");
-        public String code;
+        BLINK_OFF("\u001B[25m"),
+        WHITE_BACKGROUND("\u001B[107m");
+        public final String code;
         Color(String s) {
             code = s;
+        }
+        @Override
+        public String toString() {
+            return code;
         }
     }
     public static void printColor(String content, Color[] colors) {
@@ -33,9 +41,21 @@ public class Main {
         System.out.print(Color.RESET);
         System.out.flush();
     }
+    public static void printColor(String content, Color color) {
+        printColor(content, new Color[]{color});
+    }
     public static void printlnColor(String content, Color[] colors) {
         printColor(content, colors);
         System.out.println();
+    }
+    public static void printAlternatingColors(String content, Color[] colors, Color[] colors_always) {
+        char[] contentArr = content.toCharArray();
+        Color[] colorholder = new Color[colors_always.length + 1];
+        System.arraycopy(colors_always, 0, colorholder, 0, colors_always.length);
+        for (int i = 0; i<contentArr.length; i++) {
+            colorholder[colorholder.length-1] = colors[i % colors.length];
+            printColor(Character.toString(contentArr[i]),colorholder);
+        }
     }
     // clear screen code taken from stack overflow
     public static void clearScreen() {
@@ -52,8 +72,15 @@ public class Main {
     }
     public static void main(String[] args) throws Exception {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("---WARLORDS---");
-        System.out.println("How many players?");
+
+        printAlternatingColors("┏━━━━━━━━┓", new Color[]{Color.RED, Color.BLACK}, new Color[]{Color.WHITE_BACKGROUND});
+        System.out.println();
+        printColor("┃", new Color[]{Color.BLACK, Color.WHITE_BACKGROUND});
+        printColor("WARLORDS", new Color[]{Color.GOLD,Color.BOLD, Color.WHITE_BACKGROUND});
+        printColor("┃", new Color[]{Color.BLACK, Color.WHITE_BACKGROUND});
+        System.out.println();
+        printAlternatingColors("┗━━━━━━━━┛", new Color[]{Color.RED, Color.BLACK}, new Color[]{Color.WHITE_BACKGROUND});
+        System.out.println("\nHow many players?");
         int playerAmount = scanner.nextInt();
         scanner.nextLine();
         ArrayList<Player> players = new ArrayList<>();
