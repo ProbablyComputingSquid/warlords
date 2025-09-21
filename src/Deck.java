@@ -46,6 +46,7 @@ public class Deck {
             for (int row = 0; row < splitCards[0].length; row++) {
                 for (int col = 0; col < splitCards.length; col++) {
                     System.out.print(splitCards[col][row]);
+                    System.out.flush();
                 }
                 System.out.println();
             }

@@ -105,6 +105,8 @@ public class Main {
                 System.out.println("The cards currently played are: " + round.getPlayedCards() + "\n And the current hand type is " + round.getHandType());
                 System.out.printf("Player %s's hand: \n", player.getName());
                 player.printFancyHand();
+                System.out.println(Color.RESET);
+                System.out.flush();
                 Round.PLAY_RESULT play_result = Round.PLAY_RESULT.HAS_NOT_PLAYED;
                 while (play_result != Round.PLAY_RESULT.SUCCESS && play_result != Round.PLAY_RESULT.JOKER_SUCCESS) {
                     System.out.println("What cards do you want to play? (e.g. 3 of hearts is 3H, 4 of clubs and spades is 4C 4S, joker is JOKER) - to pass type 'pass'");
