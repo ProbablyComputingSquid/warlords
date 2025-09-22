@@ -44,8 +44,8 @@ public class Deck {
                 splitCards[i] = cardArray[i].split("\n");
             }
             for (int row = 0; row < splitCards[0].length; row++) {
-                for (int col = 0; col < splitCards.length; col++) {
-                    System.out.print(splitCards[col][row]);
+                for (String[] splitCard : splitCards) {
+                    System.out.print(splitCard[row]);
                     System.out.flush();
                 }
                 System.out.println();
@@ -62,8 +62,8 @@ public class Deck {
             splitCards[i] = cardArray[i].split("\n");
         }
         for (int row = 0; row < splitCards[0].length; row++) {
-            for (int col = 0; col < splitCards.length; col++) {
-                output += splitCards[col][row];
+            for (String[] splitCard : splitCards) {
+                output += splitCard[row];
             }
             output += "\n";
         }

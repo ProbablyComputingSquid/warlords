@@ -1,14 +1,13 @@
 /**
  * Main.java - contains the driver for the project
- *
  * */
 
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
-    public static String[] successful_play_dialogues = {
+    public static String[] successful_play_dialogues = { // stolen from balatro teehee
             "You Aced it!",
             "You dealt with that pretty well!",
             "Looks like you weren't bluffing!",
@@ -117,8 +116,13 @@ public class Main {
             player.setName(scanner.nextLine());
             players.add(player);
         }
+
+        boolean is_playing = true;
+        boolean is_scumbag = false;
         Round round = new Round(players);
-        while (round.getRoundState() != Round.ROUND_STATE.WON && round.getRoundState() != Round.ROUND_STATE.ABORTED) {
+        while (is_playing) {
+        System.out.println("New Round!");
+        while (round.getRoundState() != Round.ROUND_STATE.FINISHED && round.getRoundState() != Round.ROUND_STATE.ABORTED) {
             for (Player player : round.getPlayers()) {
                 if (!round.isPlayerInPlay(player)) {
                     System.out.printf("Player %S has previously passed %n", player.getName());
@@ -134,7 +138,7 @@ public class Main {
                 round.displayFancyPlayedCards();
                 reset();
                 System.out.print("\n And the current hand type is ");
-                printlnColor(String.valueOf(round.getHandType()), new Color[] {Color.BOLD, Color.UNDERLINE});
+                printlnColor(String.valueOf(round.getHandType()), new Color[]{Color.BOLD, Color.UNDERLINE});
                 System.out.printf("Player %s's hand: \n", player.getName());
                 player.printFancyHand();
                 reset();
@@ -153,6 +157,7 @@ public class Main {
                         case "QUIT":
                             printlnColor("ABORTING...", new Color[]{Color.BOLD, Color.RED});
                             round.abort();
+                            is_playing = false;
                             break label;
                         case "HELP":
                             printHelp();
@@ -184,6 +189,7 @@ public class Main {
                 scanner.nextLine();
                 clearScreen();
             }
+        }
 
         }
     }

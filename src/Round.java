@@ -9,6 +9,7 @@ public class Round {
         NEW(),
         IN_PROGRESS(),
         WON(),
+        FINISHED(),
         ABORTED(),
     }
     public enum PLAY_RESULT {
@@ -37,27 +38,59 @@ public class Round {
     private int lastPlayerToPlayCardId;
     private HAND_TYPE handType = HAND_TYPE.NONE_PLAYED;
     private ArrayList<Player> players = new ArrayList<>();
+    // this keeps track of the players playing in the set
     private ArrayList<Player> playersInPlay = new ArrayList<>();
+    // this keeps track of the players who are not yet out
+    private ArrayList<Player> unfinishedPlayers = new ArrayList<>();
     private ROUND_STATE roundState;
     private ROUND_STATE setState;
     private Deck deck = new Deck();
-    private Player winner;
+    public Player warlord;
+    public Player scumbag;
+
     public Round(ArrayList<Player> players) {
+        // bool scumbag used to see if there is a scumbag and warlord
         this.players = players;
         int i = 0;
-        int threeOfClubsPlayer = 0;
+        int starting_player_id = 0;
+
         for (Player player : players) {
             playersInPlay.add(player);
+            unfinishedPlayers.add(player);
             player.recieveHand(deck.dealHand(players.size()));
             if (player.handContainsCard(new Card(Card.Rank.THREE, Card.Suit.CLUBS))) {
-                threeOfClubsPlayer = i;
+                starting_player_id = i;
                 //System.out.println("Detected three of clubs!");
             }
             i++;
         }
-        Collections.rotate(players, -threeOfClubsPlayer);
+        Collections.rotate(players, -starting_player_id);
 
         roundState = ROUND_STATE.NEW;
+    }
+    private void newSet() {
+        playersInPlay = new ArrayList<>();
+        playersInPlay.addAll(players); // reset players in play
+        unfinishedPlayers.addAll(players);
+        discardedCards = new ArrayList<>(); // discard the played set cards
+        playedSetCards = new ArrayList<>(); // purge played set cards
+        handType = HAND_TYPE.NONE_PLAYED;
+        deck = new Deck();
+        int starting_index = 0;
+        int i = 0;
+
+        for (Player player : players) {
+            player.recieveHand(deck.dealHand(players.size()));
+            player.setPlaying(true);
+            if (player.getPlayerStatus() == Player.PlayerStatus.SCUMBAG) {
+                starting_index = i;
+            }
+            i++;
+        }
+
+
+        Collections.rotate(players, -starting_index);
+        roundState = ROUND_STATE.IN_PROGRESS;
     }
     public ROUND_STATE getRoundState() {
         return roundState;
@@ -74,8 +107,8 @@ public class Round {
     public HAND_TYPE getHandType() {
         return handType;
     }
-    public Player getWinner() {
-        return winner;
+    public Player getWarlord() {
+        return warlord;
     }
     public boolean isPlayerInPlay(Player player) {
         for (Player p : playersInPlay) {
@@ -83,23 +116,7 @@ public class Round {
         }
         return false;
     }
-    private void newSet() {
-        playersInPlay = new ArrayList<>();
-        playersInPlay.addAll(players); // reset players in play
-        discardedCards.addAll(playedSetCards); // discard the played set cards
-        playedSetCards = new ArrayList<>(); // purge played set cards
-        handType = HAND_TYPE.NONE_PLAYED;
-        int winnerIndex = 0;
-        for (int i = 0; i < players.size(); i++) {
-            players.get(i).setPlaying(true);
-            if (players.get(i).equals(winner)) {
-                winnerIndex = i;
-                System.out.println("Found winner!");
-            }
-        }
 
-        Collections.rotate(players, -winnerIndex);
-    }
     public String getPlayedCards() {
         String cards = "";
         for (Card card : playedSetCards) {
@@ -140,9 +157,7 @@ public class Round {
             }
         }
         if (firstCard.getRank() == Card.Rank.JOKER) { // joker trumps everything, end the round
-            setState = ROUND_STATE.WON;
-            System.out.printf("Player %s has won the round!", player.getName());
-            newSet();
+            handleDone(player);
             return PLAY_RESULT.JOKER_SUCCESS;
         }
         // loop through the cards and check if they´ re all the same suit cause thats how pairs work
@@ -170,13 +185,30 @@ public class Round {
             }
             Deck.printCards(cards, Main.Color.FELT_GREEN_BG); // print the cards played to show
             if (player.handSize() == 0) {
-                roundState = ROUND_STATE.WON;
-                System.out.printf("Player %s has won the round!", player.getName());
-                winner = player;
+               handleDone(player);
             }
             return PLAY_RESULT.SUCCESS;
         }
         return PLAY_RESULT.FAILED_CARD_TOO_LOW;
+    }
+    public void handleDone(Player player) {
+        if (warlord == null) {
+            roundState = ROUND_STATE.WON;
+            System.out.printf("Player %s has won the round! they are now the ", player.getName());
+            Main.printColor("WARLORD", Main.Color.GOLD);
+            warlord = player;
+            player.setPlayerStatus(Player.PlayerStatus.WARLORD);
+
+        }
+        unfinishedPlayers.remove(player);
+        if (unfinishedPlayers.size() == 1) { // set last player to scumbag
+            Player scumbag = unfinishedPlayers.getFirst();
+            scumbag.setPlayerStatus(Player.PlayerStatus.SCUMBAG);
+            System.out.printf("Player %s lost! they are now the ", scumbag);
+            Main.printColor("SCUMBAG", Main.Color.RED);
+        }
+
+
     }
     // the player doesn't play anything, passes the turn
     public void passTurn(Player player) {

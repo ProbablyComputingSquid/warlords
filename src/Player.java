@@ -6,6 +6,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class Player {
+    public enum PlayerStatus {
+        UNASSIGNED("unassigned, shouldnt see this"),
+        PLAYING("Proletariat"),
+        SCUMBAG("\uD83D\uDDD1\uFE0F Scumbag"),
+        WARLORD("\uD83D\uDC51 Warlord");
+
+        private final String descriptor;
+        PlayerStatus(String s) {
+            descriptor = s;
+        }
+        @Override
+        public String toString() {
+            return descriptor;
+        }
+
+    }
+    private PlayerStatus playerStatus = PlayerStatus.PLAYING;
     private ArrayList<Card> hand;
     private final int id;
     private static int nextId = 1;
@@ -42,6 +59,8 @@ public class Player {
     public void setPlaying(boolean playing) { this.playing = playing;     }
     public boolean isPlaying() { return playing;}
     public int getId() {return id;}
+    public PlayerStatus getPlayerStatus() {return playerStatus;}
+    public void setPlayerStatus(PlayerStatus p) {playerStatus = p;}
     public int handSize() {return hand.size();}
     public Player() {
         id = nextId++;
@@ -94,6 +113,10 @@ public class Player {
     }
     public void removeCard (Card card) {
         hand.remove(card);
+    }
+    public void receiveCard (Card card) {
+        hand.add(card);
+        sortHand();
     }
     @Override
     public String toString() {
