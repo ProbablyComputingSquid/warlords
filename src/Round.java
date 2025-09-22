@@ -48,6 +48,7 @@ public class Round {
     private Deck deck = new Deck();
     public Player warlord;
     public Player scumbag;
+    public Player winner; // winner of the set
 
     public Round(ArrayList<Player> players) {
         // bool scumbag used to see if there is a scumbag and warlord
@@ -69,7 +70,7 @@ public class Round {
 
         roundState = ROUND_STATE.NEW;
     }
-    private void newSet() {
+    private void restartRound() {
         playersInPlay = new ArrayList<>();
         playersInPlay.addAll(players); // reset players in play
         unfinishedPlayers.addAll(players);
@@ -79,8 +80,8 @@ public class Round {
         deck = new Deck();
         int starting_index = 0;
         int i = 0;
-        Card scumbags_card = new Card(0,0); // default placeholders
-        Card warlords_card = new Card(0,0);
+        Card scumbags_card = new Card(3,1); // default placeholders
+        Card warlords_card = new Card(3,1);
         for (Player player : players) {
             player.recieveHand(deck.dealHand(players.size()));
             player.setPlaying(true);
@@ -104,6 +105,24 @@ public class Round {
 
         Collections.rotate(players, -starting_index);
         roundState = ROUND_STATE.IN_PROGRESS;
+    }
+    private void newSet() {
+        playersInPlay = new ArrayList<>();
+        playersInPlay.addAll(players); // reset players in play
+        discardedCards.addAll(playedSetCards); // discard the played set cards
+        playedSetCards = new ArrayList<>(); // purge played set cards
+        handType = HAND_TYPE.NONE_PLAYED;
+        int winnerIndex = 0;
+
+        for (int i = 0; i < players.size(); i++) {
+            players.get(i).setPlaying(true);
+            if (players.get(i).equals(winner)) {
+                winnerIndex = i;
+                //System.out.println("Found winner!");
+            }
+        }
+
+        Collections.rotate(players, -winnerIndex);
     }
     public ROUND_STATE getRoundState() {
         return roundState;
@@ -170,7 +189,16 @@ public class Round {
             }
         }
         if (firstCard.getRank() == Card.Rank.JOKER) { // joker trumps everything, end the round
-            handleDone(player);
+            if (cards.size() > 1) {
+                System.out.println("You can only play one joker!");
+                return PLAY_RESULT.FAILED_TOO_MANY_CARDS;
+            }
+            Deck.printCards(cards, Main.Color.FELT_GREEN_BG);
+            player.removeCard(firstCard);
+            if (player.handSize() == 0) {
+                handleDone(player);
+            }
+            newSet();
             return PLAY_RESULT.JOKER_SUCCESS;
         }
         // loop through the cards and check if they´ re all the same suit cause thats how pairs work
@@ -193,7 +221,7 @@ public class Round {
         // successful play!
         if (playedSetCards.isEmpty() || firstCard.getValue() > playedSetCards.getLast().getValue()) {
             for (Card playedCard : cards) {
-                playedSetCards.add(firstCard);
+                playedSetCards.add(playedCard);
                 player.removeCard(playedCard);
             }
             Deck.printCards(cards, Main.Color.FELT_GREEN_BG); // print the cards played to show
@@ -211,7 +239,6 @@ public class Round {
             Main.printColor("WARLORD", Main.Color.GOLD);
             warlord = player;
             player.setPlayerStatus(Player.PlayerStatus.WARLORD);
-
         }
         unfinishedPlayers.remove(player);
         if (unfinishedPlayers.size() == 1) { // set last player to scumbag
@@ -220,6 +247,7 @@ public class Round {
             System.out.printf("Player %s lost! they are now the ", scumbag);
             Main.printColor("SCUMBAG", Main.Color.RED);
             scumbag = player;
+            restartRound();
         }
 
 
@@ -230,6 +258,7 @@ public class Round {
         player.setPlaying(false);
         if (playersInPlay.size() == 1) { // nobody else can play anymore
             System.out.printf("Player %s won the set! It is now their turn.", playersInPlay.getFirst().getName());
+            winner = player;
             newSet();
         }
     }

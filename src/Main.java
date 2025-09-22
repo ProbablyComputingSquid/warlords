@@ -2,6 +2,9 @@
  * Main.java - contains the driver for the project
  * */
 
+import com.sun.jdi.event.ExceptionEvent;
+
+import java.nio.channels.ScatteringByteChannel;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -124,8 +127,10 @@ public class Main {
         System.out.println("New Round!");
         while (round.getRoundState() != Round.ROUND_STATE.FINISHED && round.getRoundState() != Round.ROUND_STATE.ABORTED) {
             for (Player player : round.getPlayers()) {
+                clearScreen();
                 if (!round.isPlayerInPlay(player)) {
-                    System.out.printf("Player %S has previously passed %n", player.getName());
+                    System.out.printf("Player %S has previously passed. press enter to continue %n", player.getName());
+                    scanner.nextLine();
                     continue;
                 }
                 System.out.printf("It is time for player " + Color.BOLD + "%S" + Color.RESET + "'s turn:%n (press enter to continue)", player.getName());
@@ -140,12 +145,13 @@ public class Main {
                 System.out.print("\n And the current hand type is ");
                 printlnColor(String.valueOf(round.getHandType()), new Color[]{Color.BOLD, Color.UNDERLINE});
                 System.out.printf("Player %s's hand: \n", player.getName());
-                player.printFancyHand();
-                reset();
+
 
                 Round.PLAY_RESULT play_result = Round.PLAY_RESULT.HAS_NOT_PLAYED;
                 label:
                 while (play_result != Round.PLAY_RESULT.SUCCESS && play_result != Round.PLAY_RESULT.JOKER_SUCCESS) {
+                    player.printFancyHand();
+                    reset();
                     System.out.println("What cards do you want to play? (e.g. 3 of hearts is 3h, 4 of clubs and spades is 4C 4S, joker is JOKER) | to pass type 'pass' | for help 'help'");
                     String cards = scanner.nextLine().toUpperCase().strip();
                     switch (cards) {
@@ -163,7 +169,13 @@ public class Main {
                             printHelp();
                             break;
                         default:
-                            ArrayList<Card> cardsPlayed = player.getCardsFromHandByNames(cards.split(" "));
+                            ArrayList<Card> cardsPlayed;
+                            try {
+                                 cardsPlayed = player.getCardsFromHandByNames(cards.split(" "));
+                            } catch (Exception e) {
+                                System.out.println("error! thats probably not a card");
+                                break ;
+                            }
                             play_result = round.submitCards(player, cardsPlayed);
 
                             if (play_result != Round.PLAY_RESULT.SUCCESS && play_result != Round.PLAY_RESULT.JOKER_SUCCESS) {
@@ -178,7 +190,7 @@ public class Main {
                                 System.out.print(successful_play_dialogues[(int) (Math.random() * successful_play_dialogues.length)]);
                                 System.out.print(" Cards returned ");
                                 printlnColor(String.valueOf(play_result), new Color[]{Color.GREEN, Color.BOLD});
-                                //System.out.print("␇"); //. this should make a bell noise but jetbrains terminal is bad
+
                             }
                             break;
                     }
