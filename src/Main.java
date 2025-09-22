@@ -127,6 +127,12 @@ public class Main {
         System.out.println("New Round!");
         while (round.getRoundState() != Round.ROUND_STATE.FINISHED && round.getRoundState() != Round.ROUND_STATE.ABORTED) {
             for (Player player : round.getPlayers()) {
+                if (round.getRoundState() == Round.ROUND_STATE.NEW_SET) {
+                    // hack solution to refresh player order after round is done
+                    //System.out.println( "round break!"); // who needs break statements when println exists
+                    round.setRoundStateInProgress(); // guys this function so useful i love oop
+                    break;
+                }
                 clearScreen();
                 if (!round.isPlayerInPlay(player)) {
                     System.out.printf("Player %S has previously passed. press enter to continue %n", player.getName());

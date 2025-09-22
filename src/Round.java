@@ -10,6 +10,7 @@ public class Round {
         NEW(),
         IN_PROGRESS(),
         WON(),
+        NEW_SET(),
         FINISHED(),
         ABORTED(),
     }
@@ -112,17 +113,19 @@ public class Round {
         discardedCards.addAll(playedSetCards); // discard the played set cards
         playedSetCards = new ArrayList<>(); // purge played set cards
         handType = HAND_TYPE.NONE_PLAYED;
+        roundState = ROUND_STATE.NEW_SET;
         int winnerIndex = 0;
 
         for (int i = 0; i < players.size(); i++) {
             players.get(i).setPlaying(true);
             if (players.get(i).equals(winner)) {
                 winnerIndex = i;
-                //System.out.println("Found winner!");
+                //System.out.println("Found winner at index " + i);
             }
         }
-
-        Collections.rotate(players, -winnerIndex);
+        //System.out.println(players);
+        Collections.rotate(players, players.size() - winnerIndex);
+        //System.out.println(players);
     }
     public ROUND_STATE getRoundState() {
         return roundState;
@@ -132,6 +135,9 @@ public class Round {
     @Deprecated
     public ROUND_STATE getSetState() {
         return setState;
+    }
+    public void setRoundStateInProgress() {
+        roundState = ROUND_STATE.IN_PROGRESS;
     }
     public void abort() {
         roundState = ROUND_STATE.ABORTED;
@@ -258,7 +264,7 @@ public class Round {
         player.setPlaying(false);
         if (playersInPlay.size() == 1) { // nobody else can play anymore
             System.out.printf("Player %s won the set! It is now their turn.", playersInPlay.getFirst().getName());
-            winner = player;
+            winner = playersInPlay.getFirst();
             newSet();
         }
     }
