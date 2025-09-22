@@ -3,6 +3,7 @@
  */
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Scanner;
 
 public class Round {
     public enum ROUND_STATE {
@@ -78,15 +79,27 @@ public class Round {
         deck = new Deck();
         int starting_index = 0;
         int i = 0;
-
+        Card scumbags_card = new Card(0,0); // default placeholders
+        Card warlords_card = new Card(0,0);
         for (Player player : players) {
             player.recieveHand(deck.dealHand(players.size()));
             player.setPlaying(true);
-            if (player.getPlayerStatus() == Player.PlayerStatus.SCUMBAG) {
+            if (player.getId() == scumbag.getId()) { // if player is the scumbag, enact tribute
                 starting_index = i;
+                scumbags_card = player.getHighestCard();
+            } else if (player.getId() == warlord.getId()) {
+                System.out.print("Choose a card to give to the scumbag: ");
+                player.printFancyHand();
+                Scanner scanner = new Scanner(System.in);
+                System.out.print("enter card name: ");
+                String s = scanner.nextLine();
+                // trust the user that its correct ion wanna implement new card sorting shi
+                warlords_card = player.getCardFromHandByName(s);
             }
             i++;
         }
+        scumbag.receiveCard(warlords_card);
+        warlord.receiveCard(scumbags_card);
 
 
         Collections.rotate(players, -starting_index);
@@ -206,6 +219,7 @@ public class Round {
             scumbag.setPlayerStatus(Player.PlayerStatus.SCUMBAG);
             System.out.printf("Player %s lost! they are now the ", scumbag);
             Main.printColor("SCUMBAG", Main.Color.RED);
+            scumbag = player;
         }
 
 

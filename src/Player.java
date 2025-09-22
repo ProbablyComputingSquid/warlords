@@ -118,6 +118,11 @@ public class Player {
         hand.add(card);
         sortHand();
     }
+    public Card getHighestCard() {
+        Card card = hand.getLast();
+        hand.remove(card);
+        return card;
+    }
     @Override
     public String toString() {
         return String.format("Player '%s' (id #%d) %s", name, id, isPlaying() ? "is PLAYING" : "has PASSED");
