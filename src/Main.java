@@ -3,14 +3,25 @@
  *
  * */
 
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
+    public static String[] successful_play_dialogues = {
+            "You Aced it!",
+            "You dealt with that pretty well!",
+            "Looks like you weren't bluffing!",
+            "Too bad these chips are all virtual...",
+            "How the turn tables.",
+            "Looks like I've taught you well!",
+            "You made some heads up plays!",
+            "Good thing I didn't bet against you!",
+    };
     public enum Color {
         RESET("\033[0m"),
         BLACK("\u001B[30m"),
-        RED("\u001B[31m"),
+        RED("\u001B[38;2;176;0;32m"),
         GREEN("\u001B[32m"),
         YELLOW("\u001B[33m"),
         BLUE("\u001B[34m"),
@@ -21,8 +32,11 @@ public class Main {
         GOLD("\u001B[38;2;255;185;79m"),
 
         BOLD("\u001B[1m"),
+        UNDERLINE("\u001B[4m"),
         BLINK_ON("\u001B[5m"),
         BLINK_OFF("\u001B[25m"),
+        FELT_GREEN_BG("\u001B[48;2;11;102;35m"),
+        ERROR_BG("\u001B[48;2;251;192;45m"),
         WHITE_BACKGROUND("\u001B[107m");
         public final String code;
         Color(String s) {
@@ -62,6 +76,10 @@ public class Main {
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }
+    public static void reset() {
+        System.out.print(Color.RESET);
+        System.out.flush();
+    }
     public static void printHelp() {
         System.out.print("""
                 What is Warlords?
@@ -81,8 +99,17 @@ public class Main {
         System.out.println();
         printAlternatingColors("┗━━━━━━━━┛", new Color[]{Color.RED, Color.BLACK}, new Color[]{Color.WHITE_BACKGROUND});
         System.out.println("\nHow many players?");
-        int playerAmount = scanner.nextInt();
-        scanner.nextLine();
+        int playerAmount = -1;
+        while (playerAmount <= 1) {
+            playerAmount = scanner.nextInt();
+            scanner.nextLine();
+            if (playerAmount <= 1) {
+                printColor("ERROR:", new Color[] {Color.RED});
+                System.out.println("Invalid number of players, you can't play a card game alone (unless it's solitaire or balatro) ");
+            }
+        }
+
+
         ArrayList<Player> players = new ArrayList<>();
         for (int i = 0; i < playerAmount; i++) {
             Player player = new Player();
@@ -97,39 +124,58 @@ public class Main {
                     System.out.printf("Player %S has previously passed %n", player.getName());
                     continue;
                 }
-                System.out.printf("It is time for player %S's turn:%n (press enter to continue)", player.getName());
+                System.out.printf("It is time for player " + Color.BOLD + "%S" + Color.RESET + "'s turn:%n (press enter to continue)", player.getName());
                 scanner.nextLine();
-                for (Player p : players) {
-                    System.out.println(p);
+                System.out.println("Players in play: ");
+                for (Player p : round.getPlayersInPlay()) {
+                    System.out.println("\uD83D\uDC64" + p);
                 }
-                System.out.println("The cards currently played are: " + round.getPlayedCards() + "\n And the current hand type is " + round.getHandType());
+                System.out.println("The cards currently played are: ");
+                round.displayFancyPlayedCards();
+                reset();
+                System.out.print("\n And the current hand type is ");
+                printlnColor(String.valueOf(round.getHandType()), new Color[] {Color.BOLD, Color.UNDERLINE});
                 System.out.printf("Player %s's hand: \n", player.getName());
                 player.printFancyHand();
-                System.out.println(Color.RESET);
-                System.out.flush();
-                Round.PLAY_RESULT play_result = Round.PLAY_RESULT.HAS_NOT_PLAYED;
-                while (play_result != Round.PLAY_RESULT.SUCCESS && play_result != Round.PLAY_RESULT.JOKER_SUCCESS) {
-                    System.out.println("What cards do you want to play? (e.g. 3 of hearts is 3H, 4 of clubs and spades is 4C 4S, joker is JOKER) - to pass type 'pass'");
-                    String cards = scanner.nextLine();
-                    if (cards.strip().equalsIgnoreCase("pass")) {
-                        System.out.println("Turn Passed!");
-                        round.passTurn(player);
-                        play_result = Round.PLAY_RESULT.TURN_PASSED;
-                        break;
-                    } else if (cards.strip().equalsIgnoreCase("quit")) {
-                        System.out.println("ABORTING...");
-                        round.abort();
-                        break;
-                    }else {
-                        ArrayList<Card> cardsPlayed = player.getCardsFromHandByNames(cards.split(" "));
-                        play_result = round.submitCards(player, cardsPlayed);
+                reset();
 
-                        if (play_result != Round.PLAY_RESULT.SUCCESS && play_result != Round.PLAY_RESULT.JOKER_SUCCESS) {
-                            System.out.println("ERROR: The cards played returned status: " + play_result);
-                        } else {
-                            System.out.println("Well Played! Cards returned " + play_result);
-                            //System.out.print("␇"); //. this should make a bell noise but jetbrains terminal is bad
-                        }
+                Round.PLAY_RESULT play_result = Round.PLAY_RESULT.HAS_NOT_PLAYED;
+                label:
+                while (play_result != Round.PLAY_RESULT.SUCCESS && play_result != Round.PLAY_RESULT.JOKER_SUCCESS) {
+                    System.out.println("What cards do you want to play? (e.g. 3 of hearts is 3h, 4 of clubs and spades is 4C 4S, joker is JOKER) | to pass type 'pass' | for help 'help'");
+                    String cards = scanner.nextLine().toUpperCase().strip();
+                    switch (cards) {
+                        case "PASS":
+                            System.out.println("Turn Passed!");
+                            round.passTurn(player);
+                            play_result = Round.PLAY_RESULT.TURN_PASSED;
+                            break label;
+                        case "QUIT":
+                            printlnColor("ABORTING...", new Color[]{Color.BOLD, Color.RED});
+                            round.abort();
+                            break label;
+                        case "HELP":
+                            printHelp();
+                            break;
+                        default:
+                            ArrayList<Card> cardsPlayed = player.getCardsFromHandByNames(cards.split(" "));
+                            play_result = round.submitCards(player, cardsPlayed);
+
+                            if (play_result != Round.PLAY_RESULT.SUCCESS && play_result != Round.PLAY_RESULT.JOKER_SUCCESS) {
+                                if (play_result != Round.PLAY_RESULT.FAILED_NOT_A_VALID_CARD) { // dont try displaying an invalid card
+                                    Deck.printCards(cardsPlayed, Color.ERROR_BG);
+                                    reset();
+                                }
+                                printColor("ERROR:", Color.RED);
+                                System.out.println("The cards played returned status: " + play_result);
+                            } else {
+                                reset();
+                                System.out.print(successful_play_dialogues[(int) (Math.random() * successful_play_dialogues.length)]);
+                                System.out.print(" Cards returned ");
+                                printlnColor(String.valueOf(play_result), new Color[]{Color.GREEN, Color.BOLD});
+                                //System.out.print("␇"); //. this should make a bell noise but jetbrains terminal is bad
+                            }
+                            break;
                     }
 
                 }

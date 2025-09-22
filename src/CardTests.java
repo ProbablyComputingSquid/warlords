@@ -9,11 +9,11 @@ public class CardTests {
             //System.out.println(deck.drawCard().getFancyCard());
         }
         Card joker = new Card(13,4);
-        System.out.print(joker.getFancyCard());
+        System.out.print(joker.getFancyCard(Main.Color.WHITE_BACKGROUND));
         Deck deck2 = new Deck();
         String[] cards = new String[3];
         for (int i = 0; i < 3; i++) {
-            cards[i] = deck2.drawCard().getFancyCard();
+            cards[i] = deck2.drawCard().getFancyCard(Main.Color.WHITE_BACKGROUND);
         }
         String[][] splitCards = new String[cards.length][3];
         for (int i = 0; i < 3; i++) {

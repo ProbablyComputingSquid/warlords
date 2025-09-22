@@ -34,10 +34,10 @@ public class Deck {
         }
         return hand;
     }
-    public static void printCards(ArrayList<Card> cards) {
+    public static void printCards(ArrayList<Card> cards, Main.Color bg) {
         String[] cardArray = new String[cards.size()];
             for (int i = 0; i < cards.size(); i++) {
-                cardArray[i] = cards.get(i).getFancyCard();
+                cardArray[i] = cards.get(i).getFancyCard(bg);
             }
             String[][] splitCards = new String[cardArray.length][3];
             for (int i = 0; i < cards.size(); i++) {
@@ -55,7 +55,7 @@ public class Deck {
         String[] cardArray = new String[cards.size()];
         String output = "";
         for (int i = 0; i < cards.size(); i++) {
-            cardArray[i] = cards.get(i).getFancyCard();
+            cardArray[i] = cards.get(i).getFancyCard(Main.Color.WHITE_BACKGROUND);
         }
         String[][] splitCards = new String[cardArray.length][3];
         for (int i = 0; i < cards.size(); i++) {

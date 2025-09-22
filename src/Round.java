@@ -51,21 +51,19 @@ public class Round {
             player.recieveHand(deck.dealHand(players.size()));
             if (player.handContainsCard(new Card(Card.Rank.THREE, Card.Suit.CLUBS))) {
                 threeOfClubsPlayer = i;
-                System.out.println("Detected three of clubs!");
+                //System.out.println("Detected three of clubs!");
             }
             i++;
         }
         Collections.rotate(players, -threeOfClubsPlayer);
-        for (Player player : players) {
-            System.out.println(player.getName());
-        }
+
         roundState = ROUND_STATE.NEW;
     }
     public ROUND_STATE getRoundState() {
         return roundState;
     }
     public ArrayList<Player> getPlayers() {return players;}
-
+    public ArrayList<Player> getPlayersInPlay() {return playersInPlay;}
     @Deprecated
     public ROUND_STATE getSetState() {
         return setState;
@@ -108,6 +106,14 @@ public class Round {
             cards += card + ", ";
         }
         return cards;
+    }
+    public void displayFancyPlayedCards() {
+        if (playedSetCards.isEmpty()) {
+            System.out.println("Nothing has been played yet - play any valid hand");
+        } else { // okay i know this else is redundant but it makes sense for readibility
+            Deck.printCards(playedSetCards, Main.Color.FELT_GREEN_BG);
+        }
+
     }
     /**
      *
@@ -162,7 +168,7 @@ public class Round {
                 playedSetCards.add(firstCard);
                 player.removeCard(playedCard);
             }
-            Deck.printCards(cards); // print the cards played to show
+            Deck.printCards(cards, Main.Color.FELT_GREEN_BG); // print the cards played to show
             if (player.handSize() == 0) {
                 roundState = ROUND_STATE.WON;
                 System.out.printf("Player %s has won the round!", player.getName());

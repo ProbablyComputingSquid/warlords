@@ -21,7 +21,7 @@ public class Player {
     }
     public void printFancyHand() {
         sortHand();
-        Deck.printCards(hand);
+        Deck.printCards(hand, Main.Color.WHITE_BACKGROUND);
     }
     public String getFancyHand() {
         sortHand();
