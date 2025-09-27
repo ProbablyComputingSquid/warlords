@@ -158,7 +158,7 @@ public class Main {
                 while (play_result != Round.PLAY_RESULT.SUCCESS && play_result != Round.PLAY_RESULT.JOKER_SUCCESS) {
                     player.printFancyHand();
                     reset();
-                    System.out.println("What cards do you want to play? (e.g. 3 of hearts is 3h, 4 of clubs and spades is 4C 4S, joker is JOKER) | to pass type 'pass' | for help 'help'");
+                    System.out.println("What cards do you want to play? (e.g. 3 of hearts is 3h, 4 of clubs and spades is 4C 4S, joker is JOKER) | 'pass' | 'help' | 'quit' ");
                     String cards = scanner.nextLine().toUpperCase().strip();
                     switch (cards) {
                         case "PASS":
@@ -167,9 +167,18 @@ public class Main {
                             play_result = Round.PLAY_RESULT.TURN_PASSED;
                             break label;
                         case "QUIT":
-                            printlnColor("ABORTING...", new Color[]{Color.BOLD, Color.RED});
-                            round.abort();
-                            is_playing = false;
+                            printColor("Warning! ", Color.YELLOW);
+                            System.out.println("Are you sure that you want to quit? All progress will be lost. (y/N) ");
+                            String user_resp = scanner.nextLine().strip().toLowerCase();
+                            if (user_resp.equals("quit") || user_resp.equals("exit") ||  user_resp.equals("yes") || user_resp.equals("y")) { // me when input validation
+                                printlnColor("ABORTING...", new Color[]{Color.BOLD, Color.RED});
+                                round.abort();
+                                is_playing = false;
+                            }
+                            else {
+                                printColor("Returning...", Color.GREEN);
+                                System.out.println("Let the games continue!");
+                            }
                             break label;
                         case "HELP":
                             printHelp();
@@ -179,7 +188,7 @@ public class Main {
                             try {
                                  cardsPlayed = player.getCardsFromHandByNames(cards.split(" "));
                             } catch (Exception e) {
-                                System.out.println("error! thats probably not a card");
+                                System.out.println("error! that's probably not a card");
                                 break ;
                             }
                             play_result = round.submitCards(player, cardsPlayed);
