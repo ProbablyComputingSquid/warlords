@@ -173,7 +173,7 @@ public class Round {
         if (playedSetCards.isEmpty()) {
             System.out.println("Nothing has been played yet - play any valid hand");
         } else { // okay i know this else is redundant but it makes sense for readibility
-            Deck.printCards(playedSetCards, Main.Color.FELT_GREEN_BG);
+            Deck.printCards(playedSetCards, Main.Color.WHITE_BACKGROUND);
         }
 
     }
