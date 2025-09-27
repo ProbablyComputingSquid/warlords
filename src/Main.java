@@ -150,6 +150,8 @@ public class Main {
                 reset();
                 System.out.print("\n And the current hand type is ");
                 printlnColor(String.valueOf(round.getHandType()), new Color[]{Color.BOLD, Color.UNDERLINE});
+                System.out.print("And the rank to beat is:");
+                printlnColor(String.valueOf(round.getCurrentRank()), new Color[]{Color.BOLD, Color.UNDERLINE});
                 System.out.printf("Player %s's hand: \n", player.getName());
 
 
@@ -158,7 +160,7 @@ public class Main {
                 while (play_result != Round.PLAY_RESULT.SUCCESS && play_result != Round.PLAY_RESULT.JOKER_SUCCESS) {
                     player.printFancyHand();
                     reset();
-                    System.out.println("What cards do you want to play? (e.g. 3 of hearts is 3h, 4 of clubs and spades is 4C 4S, joker is JOKER) | 'pass' | 'help' | 'quit' ");
+                    System.out.println("What cards do you want to play? (e.g. 3 of hearts is 3h, 4 of clubs and spades is 4C 4S, joker is JOKER. ) | 'pass' | 'help' | 'quit' ");
                     String cards = scanner.nextLine().toUpperCase().strip();
                     switch (cards) {
                         case "PASS":

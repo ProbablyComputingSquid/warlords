@@ -11,6 +11,8 @@ public class Card implements Comparable<Card> {
         private Rank(String label) {
             this.label = label;
         }
+        @Override
+        public String toString() {return label;}
     }
 
 

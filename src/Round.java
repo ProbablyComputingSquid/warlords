@@ -145,6 +145,13 @@ public class Round {
     public HAND_TYPE getHandType() {
         return handType;
     }
+    public String getCurrentRank() {
+        if (handType == HAND_TYPE.NONE_PLAYED) {
+            return "nothing!";
+        } else {
+            return "" + playedSetCards.getLast().getRank(); // force to string lol
+        }
+    }
     public Player getWarlord() {
         return warlord;
     }
