@@ -2,6 +2,7 @@
 
 
 ![created by humans not ai](Created-By-Humans-Not-By-AI-Badge-black.png)
+[![Athena Award Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Faward.athena.hackclub.com%2Fapi%2Fbadge)](https://award.athena.hackclub.com?utm_source=readme)
 
 
 wondering how to run it? scroll down for instructions VVV
@@ -33,3 +34,11 @@ this is why I am making a digitized adaption in order to share with others the f
 this projects files have bundled into a .jar file for your convenience. 
 sadly i was not able to make it run in browser so you will have to download and run the file yourself.
 it should be linked in the latest release on the github releases to your right-hand side. make sure to install the latest java sdk 
+
+download the latest release from here! https://github.com/ProbablyComputingSquid/warlords/releases/tag/v1.0.0
+and run `java -jar warlords.jar`
+
+---
+### how and why did I make this project?
+
+there was a programming club challenge to make an implementation of a card game in java, so I took that and made a very bare-bones implementation of the australian card game warlords in java. for athena, i decided to fully implement it, make it a somewhat smooth user experience and to add coloring and decent-looking tui for the users. no ai was used in this project, not even code autocomplete cause i aint want no big ai training on my code as bad as it is lmao
