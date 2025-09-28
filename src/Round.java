@@ -91,18 +91,40 @@ public class Round {
                 starting_index = i;
                 scumbags_card = player.getHighestCard();
             } else if (player.getId() == warlord.getId()) {
-                System.out.print("Choose a card to give to the scumbag: ");
+                Main.printColor("WARLORD " + player.getName() + "\n", Main.Color.GOLD);
+                System.out.println("Choose a card to give to the scumbag: ");
                 player.printFancyHand();
                 Scanner scanner = new Scanner(System.in);
-                System.out.print("enter card name: ");
-                String s = scanner.nextLine();
-                // trust the user that its correct ion wanna implement new card sorting shi
-                warlords_card = player.getCardFromHandByName(s);
+                boolean realcard = false;
+                while (!realcard) {
+                    try {
+                        System.out.print("enter card name: ");
+                        String s = scanner.nextLine().strip().toUpperCase();
+                        warlords_card = player.getCardFromHandByName(s);
+                        if (warlords_card == null) {
+                            throw new Exception("Couldn't find that card!");
+                        }
+                        realcard = true;
+                    } catch (Exception exception) {
+                        System.out.println("error occurred! " + exception);
+                    }
+                }
+
+
             }
             i++;
         }
+        System.out.println("It is now " + scumbag.getName() + "'s turn. press enter to continue");
+        Scanner scanner = new Scanner(System.in);
+        scanner.nextLine();
+        System.out.println("You have received the \n" + warlords_card.getFancyCard(Main.Color.WHITE_BACKGROUND));
+        System.out.println("But had to give up the \n" + scumbags_card.getFancyCard(Main.Color.WHITE_BACKGROUND));
+
         scumbag.receiveCard(warlords_card);
         warlord.receiveCard(scumbags_card);
+        scumbag.printFancyHand();
+
+
 
 
         Collections.rotate(players, -starting_index);
@@ -254,7 +276,7 @@ public class Round {
         if (warlord == null) {
             roundState = ROUND_STATE.WON;
             System.out.printf("Player %s has won the round! they are now the ", player.getName());
-            Main.printColor("WARLORD", Main.Color.GOLD);
+            Main.printColor("WARLORD\n", Main.Color.GOLD);
             warlord = player;
             player.setPlayerStatus(Player.PlayerStatus.WARLORD);
         }
@@ -263,7 +285,7 @@ public class Round {
             scumbag = unfinishedPlayers.getFirst();
             scumbag.setPlayerStatus(Player.PlayerStatus.SCUMBAG);
             System.out.printf("Player %s lost! they are now the ", scumbag.getName());
-            Main.printColor("SCUMBAG", Main.Color.RED);
+            Main.printColor("SCUMBAG\n", Main.Color.RED);
             restartRound();
         }
 
