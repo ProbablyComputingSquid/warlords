@@ -25,6 +25,7 @@ public class Round {
         HAS_NOT_PLAYED(),
         TURN_PASSED(),
         FAILED_NOT_A_VALID_CARD(),
+        DUPLICATE_CARDS(),
     }
     public enum HAND_TYPE {
         NONE_PLAYED,
@@ -200,6 +201,7 @@ public class Round {
             if (_card.getRank() != firstCard.getRank()) {
                 return PLAY_RESULT.FAILED_NOT_ALL_SAME_RANK;
             }
+
         }
         if (firstCard.getRank() == Card.Rank.JOKER) { // joker trumps everything, end the round
             if (cards.size() > 1) {
@@ -208,9 +210,11 @@ public class Round {
             }
             Deck.printCards(cards, Main.Color.FELT_GREEN_BG);
             player.removeCard(firstCard);
+            winner = player;
             if (player.handSize() == 0) {
                 handleDone(player);
             }
+
             newSet();
             return PLAY_RESULT.JOKER_SUCCESS;
         }
@@ -246,6 +250,7 @@ public class Round {
         return PLAY_RESULT.FAILED_CARD_TOO_LOW;
     }
     public void handleDone(Player player) {
+        Main.printColor("Player " + player.getName() + " is FINISHED! Solid job!", Main.Color.GREEN);
         if (warlord == null) {
             roundState = ROUND_STATE.WON;
             System.out.printf("Player %s has won the round! they are now the ", player.getName());
@@ -255,11 +260,10 @@ public class Round {
         }
         unfinishedPlayers.remove(player);
         if (unfinishedPlayers.size() == 1) { // set last player to scumbag
-            Player scumbag = unfinishedPlayers.getFirst();
+            scumbag = unfinishedPlayers.getFirst();
             scumbag.setPlayerStatus(Player.PlayerStatus.SCUMBAG);
-            System.out.printf("Player %s lost! they are now the ", scumbag);
+            System.out.printf("Player %s lost! they are now the ", scumbag.getName());
             Main.printColor("SCUMBAG", Main.Color.RED);
-            scumbag = player;
             restartRound();
         }
 

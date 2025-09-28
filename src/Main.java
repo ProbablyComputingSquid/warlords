@@ -30,14 +30,16 @@ public class Main {
         PURPLE("\u001B[35m"),
         CYAN("\u001B[36m"),
         WHITE("\u001B[37m"),
+        GREY("\u001B[38;2;75;78;83m"), // graphite grey
 
-        GOLD("\u001B[38;2;255;185;79m"),
+        GOLD("\u001B[38;2;75;78;83m"),
 
         BOLD("\u001B[1m"),
         UNDERLINE("\u001B[4m"),
         BLINK_ON("\u001B[5m"),
         BLINK_OFF("\u001B[25m"),
-        FELT_GREEN_BG("\u001B[48;2;11;102;35m"),
+        FELT_GREEN_BG("\u001B[48;2;144;238;144m"),
+
         ERROR_BG("\u001B[48;2;251;192;45m"),
         WHITE_BACKGROUND("\u001B[107m");
         public final String code;
@@ -162,6 +164,7 @@ public class Main {
                     reset();
                     System.out.println("What cards do you want to play? (e.g. 3 of hearts is 3h, 4 of clubs and spades is 4C 4S, joker is JOKER. ) | 'pass' | 'help' | 'quit' ");
                     String cards = scanner.nextLine().toUpperCase().strip();
+                    card_switch:
                     switch (cards) {
                         case "PASS":
                             System.out.println("Turn Passed!");
@@ -176,18 +179,31 @@ public class Main {
                                 printlnColor("ABORTING...", new Color[]{Color.BOLD, Color.RED});
                                 round.abort();
                                 is_playing = false;
+                                break label;
                             }
                             else {
                                 printColor("Returning...", Color.GREEN);
                                 System.out.println("Let the games continue!");
                             }
-                            break label;
+                            break;
                         case "HELP":
                             printHelp();
                             break;
                         default:
                             ArrayList<Card> cardsPlayed;
                             try {
+                                 String[] splitCards = cards.split(" ");
+                                 ArrayList<String> cardsSeen = new ArrayList<>();
+                                 for (int i = 0; i < splitCards.length; i++) {
+                                     for (int j = 0; j < splitCards.length; j++) {
+                                         if (splitCards[i].equals(splitCards[j]) && j != i) {
+                                             printColor("Error: ", Color.RED);
+                                             System.out.println("cannot play duplicate cards");
+                                             play_result = Round.PLAY_RESULT.DUPLICATE_CARDS;
+                                             break card_switch;
+                                         }
+                                     }
+                                 }
                                  cardsPlayed = player.getCardsFromHandByNames(cards.split(" "));
                             } catch (Exception e) {
                                 System.out.println("error! that's probably not a card");

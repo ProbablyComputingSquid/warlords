@@ -47,15 +47,15 @@ public class Card implements Comparable<Card> {
             card_color = Main.Color.RED;
         }
 
-        String formatted_middle = String.format(bg + "┓\n┃ " + card_color + "%S" + Main.Color.RESET + bg + " ┃\n", suit.label);
+        String formatted_middle = String.format(bg + "┓\n┃ " + card_color + "%S" + Main.Color.GREY + bg + " ┃\n", suit.label);
         if (getRank().label.equals("10")) {
-            card.append(String.format(bg + "┏" + card_color + "%s" +  Main.Color.RESET + bg + "━", rank.label));
+            card.append(String.format(bg + "┏" + card_color + "%s" +  Main.Color.GREY + bg + "━", rank.label));
             card.append(formatted_middle);
-            card.append(String.format(bg + "┗━" + card_color + "%s"+ Main.Color.RESET + bg + "┛\n", rank.label));
+            card.append(String.format(bg + "┗━" + card_color + "%s"+ Main.Color.GREY + bg + "┛\n", rank.label));
         } else {
-            card.append(String.format(bg +"┏" + card_color + "%s" + Main.Color.RESET + bg + "━━", rank.label));
+            card.append(String.format(bg +"┏" + card_color + "%s" + Main.Color.GREY + bg + "━━", rank.label));
             card.append(formatted_middle);
-            card.append(String.format(bg + "┗━━" + card_color + "%s" + Main.Color.RESET + bg + "┛\n", rank.label));
+            card.append(String.format(bg + "┗━━" + card_color + "%s" + Main.Color.GREY + bg + "┛\n", rank.label));
         }
         return card.toString();
     }

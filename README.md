@@ -1,6 +1,9 @@
 # warlords! 
 
 
+![created by humans not ai](Created-By-Humans-Not-By-AI-Badge-black.png)
+
+
 wondering how to run it? scroll down for instructions VVV
 
 
